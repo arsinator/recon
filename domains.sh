@@ -1,0 +1,1 @@
+cat reg.txt | grep -oE "subdomains.*references" | sed 's/^..............//' | sed 's/..............$//' | sed 's/,"//g' | tr '"' '\n'
