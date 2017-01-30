@@ -1,0 +1,1 @@
+for i in `head -2 domains2.txt`; do mkdir $i; curl https://www.threatcrowd.org/searchApi/v2/domain/report/?domain=$i | grep -oE "subdomains.*references" | sed 's/^..............//' | sed 's/..............$//' | sed 's/,"//g' | tr '"' '\n' > $i/domains.txt ; done
