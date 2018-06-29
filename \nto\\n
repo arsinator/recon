@@ -1,0 +1,1 @@
+cat a.txt | tr '\n' P | sed 's/P/\\n/g'
