@@ -39,7 +39,7 @@ function ars(){
         xhr2.setRequestHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3");
         xhr2.setRequestHeader("content-type", "application\/x-www-form-urlencoded");
         xhr2.withCredentials = true;
-        var body2 = "EmailAddress=b9125%40yandex.ru&Password=Nvd-w3e-7vu-Ph3&next==%2Fdashboard&g-recaptcha-response=";
+        var body2 = "EmailAddress=email&Password=pass&next==%2Fdashboard&g-recaptcha-response=";
         xhr2.onreadystatechange = function() { // (3)
             if (xhr2.readyState != 4) return;
             if (xhr2.status != 200) {
