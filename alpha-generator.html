@@ -1,0 +1,121 @@
+// ==UserScript==
+// @name         alpha
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  alpha discovery
+// @author       You
+// @match        https://*.worldquantvrc.com/*
+// @grant        none
+// ==/UserScript==
+<script type="text/javascript">
+
+var dataSet = JSON.parse(localStorage.getItem('expressionSyntax'));
+dataSet = dataSet['dataFields']['USA'];
+function getRandomInt(min, max)
+{
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getNumbers(len,vin){
+    var url1 = "http://localhost:8070/alpha.php?getRandom="+len+"&window="+vin;
+    let request = new XMLHttpRequest();
+    request.open("GET", url1,false);
+    request.send();
+    return request.responseText.split(":");
+}
+
+function ars(){
+	
+    if(document.location.pathname == "/dashboard"){
+        var d = Date();
+        var minute = parseInt(d.substr(19,2));
+        if (minute %10 == 0)
+            location.reload();
+    }
+    if(document.location.pathname == "/login"){
+        var xhr2 = new XMLHttpRequest();
+        xhr2.open("POST", "https:\/\/www.worldquantvrc.com\/login\/process", true);
+        xhr2.setRequestHeader("Accept", "application\/json");
+        xhr2.setRequestHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3");
+        xhr2.setRequestHeader("content-type", "application\/x-www-form-urlencoded");
+        xhr2.withCredentials = true;
+        var body2 = "EmailAddress=login&Password=password&next==%2Fdashboard&g-recaptcha-response=";
+        xhr2.onreadystatechange = function() { // (3)
+            if (xhr2.readyState != 4) return;
+            if (xhr2.status != 200) {
+                alert(xhr2.status + ': ' + xhr2.statusText);
+            } else {
+                var a = JSON.parse(xhr2.responseText);
+                document.location = "https://www.worldquantvrc.com/dashboard";
+            }
+        };
+        xhr2.send(body2);
+    }
+    if(document.location.pathname == "/result"){
+        var x = document.getElementsByTagName('label').length;
+        document.getElementsByTagName('label')[x-1].click();
+        var alpha = '';
+        if (window.sessionStorage.getItem('Alpha')) {alpha = window.sessionStorage.getItem('Alpha'); }
+        if (window.sessionStorage.getItem('Window')) { var vindov = window.sessionStorage.getItem('Window'); }
+        /*
+        firstData = document.getElementsByTagName('span')[36].innerText;
+        alert(firstData);
+        var i = 0;
+        if (localStorage.getItem(firstData) == null){
+            localStorage.setItem(firstData, i);
+        }
+        else {
+            i = localStorage.getItem(firstData);
+            i = parseInt(i);
+            i = i + 1;
+            localStorage.setItem(firstData, i);
+        }
+        */
+        //i = data;
+
+
+        document.getElementById('test-statsBtn').click();
+        var spanLength = document.getElementsByTagName('span').length;
+        var sharp = document.getElementsByTagName('span')[spanLength-9].innerText;
+        var fitnes = document.getElementsByTagName('span')[spanLength-8].innerText;
+
+        sharp = parseFloat(sharp);
+        fitnes = parseFloat(fitnes);
+        if(isNaN(sharp) || isNaN(fitnes))
+            return 0;
+        var j = (alpha.match(/@/g) || []).length;
+        var arrNum = getNumbers(j,vindov);
+        var k = 0 ;
+        while(k<j){
+            alpha = alpha.replace('@',dataSet[arrNum[k]]);
+            k = k+1;
+        }
+        //alpha = alpha.replace('@',dataSet[data]);
+        alpha = encodeURIComponent(alpha);
+        if(Math.abs(sharp) > 0.5 && Math.abs(fitnes) > 0.5)
+        {
+            var prevAlpha = encodeURIComponent(window.sessionStorage.getItem('prevAlpha'));
+            var b = new Image().src="http://localhost:8070/alpha.php?alpha="+prevAlpha+"&sharp="+sharp+"&fitnes="+fitnes+"&window="+vindov;
+        }
+        window.sessionStorage.setItem('prevAlpha',alpha);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "https:\/\/www.worldquantvrc.com\/simulate", true);
+        xhr.setRequestHeader("Accept", "application\/json");
+        xhr.setRequestHeader("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3");
+        xhr.setRequestHeader("content-type", "application\/x-www-form-urlencoded");
+        xhr.withCredentials = true;
+        var body = "args=%5B%7B%22nanhandling%22%3A%22off%22%2C%22delay%22%3A%221%22%2C%22unitcheck%22%3A%22off%22%2C%22pasteurize%22%3A%22on%22%2C%22univid%22%3A%22TOP200%22%2C%22opcodetype%22%3A%22FLOWSEXPR%22%2C%22opassetclass%22%3A%22EQUITY%22%2C%22unithandling%22%3A%22verify%22%2C%22optrunc%22%3A0.1%2C%22code%22%3A%22"+alpha+"%22%2C%22region%22%3A%22USA%22%2C%22opneut%22%3A%22market%22%2C%22IntradayType%22%3Anull%2C%22tags%22%3A%22equity%22%2C%22decay%22%3A4%2C%22DataViz%22%3A0%2C%22backdays%22%3A256%2C%22simtime%22%3A%22Y5%22%7D%5D";
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
+            if (xhr.status != 200) {
+                alert(xhr.status + ': ' + xhr.statusText);
+            } else {
+                var a = JSON.parse(xhr.responseText);
+                document.location = "https://www.worldquantvrc.com/wait?q="+a['result'];
+            }
+        };
+        xhr.send(body);
+    }
+}
+setInterval(ars,5000);
+</script>
